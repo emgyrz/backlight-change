@@ -88,7 +88,6 @@ get_int_arg() {
 while [ -n "$1" ]
 do
   case $1 in
-        $re) set_op_type 1;;
       store) set_op_type 4;;
      resume) set_op_type 5;;
   -h|--help) show_help; exit 0;;&

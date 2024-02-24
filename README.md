@@ -45,7 +45,7 @@ cd /tmp &&\
 
 It will be good to grant the permission to user
 
-For `systemd` users some info from [ArchWiki](https://wiki.archlinux.org/title/backlight#ACPI):
+There is some info from [ArchWiki](https://wiki.archlinux.org/title/backlight#ACPI) for `systemd` users:
 
 > By default, only root can change the brightness by this method. To allow users in the video group to change the brightness, a udev rule such as the following can be used (Logging out/Rebooting may be necessary to changes take effects):
 >
@@ -53,7 +53,7 @@ For `systemd` users some info from [ArchWiki](https://wiki.archlinux.org/title/b
 >
 > `ACTION=="add", SUBSYSTEM=="backlight", RUN+="/bin/chgrp video $sys$devpath/brightness", RUN+="/bin/chmod g+w $sys$devpath/brightness"`
 
-Or run same commands sometime on system boot. E.g. `openrc` users can create file in `/etc/local.d/` with `.start` postfix:
+Or you can just run same commands sometime on system boot. E.g. `openrc` users can create file in `/etc/local.d/` with `.start` postfix:
 
 `/etc/local.d/backlight_rights.start`
 ```sh

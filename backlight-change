@@ -1,0 +1,146 @@
+#!/bin/bash
+
+int_arg=0
+is_percent=0
+
+# 0 - none; 1 - increment, 2 - decrement, 3 - set, 4 - store, 5 - resume
+op_type=0
+
+dev=$(ls /sys/class/backlight/ | head -n 1)
+store_file=$HOME/.backlight_stored_value
+
+
+show_help() {
+  echo helpmsg
+}
+
+
+if [[ $# -eq 0 ]] ; then
+    show_help
+    exit 1
+fi
+
+
+err() {
+  echo $1 >&2 && exit 1
+}
+
+
+set_op_type() {
+  if [ $op_type != 0 ]; then 
+    err "err: setted"
+  else
+    op_type=$1
+  fi
+}
+
+
+get_int_arg() {
+  arg=$1
+  re='^(-|\+)?[0-9]+%?$'
+  if ! [[ $1 =~ $re ]]; then
+    err "invalid argument"
+  fi
+
+  if [[ $arg == +* ]]; then
+    set_op_type 1
+    arg=${arg:1}
+  elif [[ $1 == -* ]]; then
+    set_op_type 2
+    arg=${arg:1}
+  else
+    set_op_type 3
+  fi
+
+  if [[ $arg == *% ]]; then
+    is_percent=1
+    arg=${arg::-1}
+  fi
+
+  int_arg=$arg
+}
+
+
+
+while [ -n "$1" ]
+do
+  case $1 in
+        $re) set_op_type 1;;
+      store) set_op_type 4;;
+     resume) set_op_type 5;;
+         -f) store_file=$2;shift;;
+         -d) dev=$2;shift;;
+          *) get_int_arg $1;;
+  esac
+  shift
+done
+
+# TODO check dev availability
+
+brightness_file="/sys/class/backlight/$dev/brightness"
+max=$(cat /sys/class/backlight/$dev/max_brightness)
+curr=$(cat $brightness_file)
+
+
+normalize_val() {
+  if [ "$1" -gt "$max" ]; then
+      echo $max
+  elif [ "$1" -lt "0" ]; then
+      echo 0
+  else
+      echo $1
+  fi
+}
+
+
+update_backlight() {
+  val=$(normalize_val $1)
+  echo $val > $brightness_file
+}
+
+
+run_inc_dec() {
+  new_val=$curr;
+
+  if [ $is_percent == 1 ]; then
+    from_percent=$((int_arg * (max) / 100))
+	  [ $op_type == 2 ] && new_val=$((curr - from_percent)) || new_val=$((curr + from_percent))
+  else
+  	[ $op_type == 2 ] && new_val=$((curr - int_arg)) || new_val=$((curr + int_arg))
+  fi
+
+  update_backlight $new_val
+}
+
+
+run_set() {
+  if [ $is_percent == 0 ] ;then
+    update_backlight $int_arg
+  else
+    update_backlight $((int_arg * max / 100))
+  fi
+}
+
+
+run_resume() {
+  stored=$(cat $store_file)
+
+  if ! [[ $stored =~ ^[0-9]+$ ]] ; then
+    err "error: Not a number" 
+  fi
+
+  update_backlight $stored
+}
+
+
+
+case $op_type in 
+  0) err "something went wrong";;
+  1|2) run_inc_dec;;&
+  3) run_set;;
+  4) echo $curr > $store_file;;
+  5) run_resume;;
+esac
+
+
+

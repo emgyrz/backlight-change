@@ -2,6 +2,8 @@
 
 The script for manipulating (set/increase/decrease/store/resume) the brightness (exact value or percent) of the screen using `/sys/class/backlight` device files.
 
+## Usage
+
 `backlight-change --help` output:
 ```sh
 
@@ -39,10 +41,11 @@ cd /tmp &&\
     echo Done
 ```
 
-#### It will be good 
-...to grant the permission to user
+#### Permissions
 
-For `systemd` users from [ArchWiki](https://wiki.archlinux.org/title/backlight#ACPI):
+It will be good to grant the permission to user
+
+For `systemd` users some info from [ArchWiki](https://wiki.archlinux.org/title/backlight#ACPI):
 
 > By default, only root can change the brightness by this method. To allow users in the video group to change the brightness, a udev rule such as the following can be used (Logging out/Rebooting may be necessary to changes take effects):
 >
@@ -50,7 +53,7 @@ For `systemd` users from [ArchWiki](https://wiki.archlinux.org/title/backlight#A
 >
 > `ACTION=="add", SUBSYSTEM=="backlight", RUN+="/bin/chgrp video $sys$devpath/brightness", RUN+="/bin/chmod g+w $sys$devpath/brightness"`
 
-Or run same commands sometime on system boot. E.g. `openrc` user can create file in `/etc/local.d/` with `.start` postfix. E.g.
+Or run same commands sometime on system boot. E.g. `openrc` users can create file in `/etc/local.d/` with `.start` postfix:
 
 `/etc/local.d/backlight_rights.start`
 ```sh
@@ -59,16 +62,20 @@ Or run same commands sometime on system boot. E.g. `openrc` user can create file
 /bin/chgrp video /sys/class/backlight/*/brightness
 /bin/chmod g+w /sys/class/backlight/*/brightness
 ```
-___
 
-...and setup key bindings. i3 config example
+#### Key binding
+
+Also you may want to add some key bindings. 
+If your keyboard has buttons to control brightness, 
+most likely their key codes are as follows - `XF86MonBrightnessDown` and `XF86MonBrightnessUp`.
+In this case, config, for example, for i3 will look like this
+
 ```sh
-
+# ~/.config/i3/config
 bindsym XF86MonBrightnessUp exec --no-startup-id backlight-change +5%
 bindsym XF86MonBrightnessDown exec --no-startup-id backlight-change -5%
 
 ```
-
 
 
 ## License

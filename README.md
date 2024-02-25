@@ -53,7 +53,7 @@ There is some info from [ArchWiki](https://wiki.archlinux.org/title/backlight#AC
 >
 > `ACTION=="add", SUBSYSTEM=="backlight", RUN+="/bin/chgrp video $sys$devpath/brightness", RUN+="/bin/chmod g+w $sys$devpath/brightness"`
 
-Or you can just run same commands sometime on system boot. E.g. `openrc` users can create file in `/etc/local.d/` with `.start` postfix:
+Or you can just run same commands sometime on system boot. E.g. `openrc` users can [create](https://wiki.gentoo.org/wiki//etc/local.d) file in `/etc/local.d/` with `.start` postfix (remember to mark the script as executable):
 
 `/etc/local.d/backlight_rights.start`
 ```sh

@@ -15,7 +15,7 @@ If it is prefixed with - or +, the brightness will be reduced or increased based
 Arguments:
   -h, --help        Show this message and exit
   -d DEV_NAME       Specify the device to work with. By default first device in /sys/class/backlight/ is used
-  -f FILE_NAME      Specify the file to save the value to and from which to take the value. By default - /home/mz/.backlight_stored_value
+  -f FILE_NAME      Specify the file to save the value to and from which to take the value. By default - ~/.backlight_stored_value
 
 Commands:
   store             Store current brightness value
